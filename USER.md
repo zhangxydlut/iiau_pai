@@ -10,6 +10,7 @@
 可以通过挂载点(e.g. /mnt/storage-titan1)来访问硬盘上的内容,
 
 ```
+sudo apt-get install --assume-yes nfs-common  # required by nfs 
 sudo mount -t nfs --options nfsvers=4.1 <storage-server-ip>:/data/ /mnt/data
 # e.g.
 # sudo mount -t nfs --options nfsvers=4.1 10.7.xx.xx:/data/ /mnt/data
@@ -18,6 +19,8 @@ sudo mount -t nfs --options nfsvers=4.1 <storage-server-ip>:/data/ /mnt/data
 
 管理员目前将８T硬盘作为实际物理硬盘，用户根据自己需要，
 将自己的数据存入**所分配到的虚拟集群**(e.g. titan12)的**实际物理节点**(e.g.10.7.xx.xx)的`/share/data`下，
+
+考虑到`10.7.xx.xx:/data/`是公用的，建议大家在其中建立自己的文件夹
 
 ## 使用SSH
 在job command中使用`sleep`，维持docker的运行

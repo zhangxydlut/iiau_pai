@@ -896,6 +896,7 @@ sudo apt-get install --assume-yes nfs-common
 ```
 sudo mkdir -p MOUNT_PATH
 sudo mount -t nfs4 NFS_SERVER:/NFS_PATH MOUNT_PATH
+# e.g. sudo mount -t nfs --options nfsvers=4.1 10.7.xx.xx:/data/ /mnt/data
 ```
 `NFS_SERVER`和`NFS_PATH`可以在个人信息页面的`Storage`部分中找到。
 ![image](material/pic/storage-config.png)
