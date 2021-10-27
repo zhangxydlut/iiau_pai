@@ -89,3 +89,8 @@ curl -XGET http://10.7.xx.xx:5000/v2/image_name/tags/list
 在Job中通过 `10.7.xx.xx:5000/pytorch/pytorch:1.6.0-cuda10.1-cudnn7-devel`，
 即可使用`私有docker registry`中的Image
 ![avatar](material/pic/Private-Docker-Image-Usage.png)
+
+
+# 总结
+整个提交数据，提交代码可以通过nfs，提交镜像通过本地regisry，Job可以打开SSH端口当作一个虚拟机来用，nfs可以挂载到Job虚拟机上；
+目测整个工作流不需要用户操作机器，安全性和稳定性有保障

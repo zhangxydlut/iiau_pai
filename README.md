@@ -714,6 +714,7 @@ storage-manager:
 ./paictl.py config push -p /cluster-configuration -m service
 ./paictl.py service start -n cluster-configuration storage-manager
 ```
+为了使用8T硬盘作为存储设备，我们将8T挂载到`/share/`上，
 如果`storage-manager`成功启动，我们将在存储服务器上找到文件夹`/share/data`和`/share/users`。
 在Ubuntu计算机上，可以使用以下命令测试NFS是否正确设置：
 
@@ -809,9 +810,13 @@ PVC使用label `name: nfs-storage`绑定到特定的PV。
 kubectl get  pv
 kubectl get  pvc
 
-# 删除 PV 或 PVC, 需要先删 PVC 然后才能删 PV 
+# 删除 PV 或 PVC, 需要先停止所有task，然后先删 PVC，再然后才能删 PV 
 kubectl delete pvc <pvc-name>
 kubectl delete pv <pv-name>
+
+# 查看PV/PVC信息
+kubectl describe pvc  
+kubectl describe pv  
 
 # 查看Pod (可能有用)
 kubectl get pods
@@ -862,6 +867,17 @@ kubectl logs <name-of-pod>
 PUT http(s)://<pai-master-ip>/rest-server/api/v2/groups
 ``` 
 
+可用使用`kubectl get pvc`查看可用的storage name
+```
+kubectl get pvc
+> NAME             STATUS   VOLUME              CAPACITY   ACCESS MODES   STORAGECLASS   AGE
+> storage-3090     Bound    storage-3090-pv     2000Gi     RWX                           17s
+> storage-titan1   Bound    storage-titan1-pv   4000Gi     RWX                           4d1h
+> storage-titan3   Bound    storage-titan3-pv   4000Gi     RWX                           3m19s
+> storage-titan4   Bound    storage-titan4-pv   4000Gi     RWX                           102s
+```
+查得`storage-3090` `storage-titan1` `storage-titan3` `storage-titan4`可用
+
 请求的body为：
 ```
 {
@@ -869,7 +885,7 @@ PUT http(s)://<pai-master-ip>/rest-server/api/v2/groups
     "groupname": "default",  # 这里只有写default才会生效，不知道是为什么
     "extension": {
       "acls": {
-        "storageConfigs": ["nfs-storage"],  # <name-of-PVC>
+        "storageConfigs": ["storage-3090",”storage-titan4“,”storage-titan1“,”storage-titan3“],  # <name-of-PVC>
         "admin": false,
         "virtualClusters": ["default"]
       }
@@ -1126,13 +1142,13 @@ cp -r roles/offline-deploy-files-distribute <pai-code-dir>/contrib/kubespray/rol
 ansible-playbook -i ${HOME}/pai-deploy/cluster-cfg/hosts.yml <pai-code-dir>/contrib/kubespray/offline-deploy-files-distribute.yml  --limit=<name-of-new-worker-node>
 ```
 
-~~离线保存当前集群中的所有镜像，可以规避安装过程中的网络问题~~
-~~所需操作可通过[packup_images.sh](scripts/packup_images.sh)完成~~
-
-~~packup_images.sh 会将当前机器上的镜像打包成tar，并自动产生部署脚本`docker_load.sh`,
-~~将tar文件和`docker_load.sh`拷贝到目标机器的同一目录下，执行`bash docker_load.sh`,~~
-~~即可将所有镜像部署到当前机器。~~
-
+- 保存所有镜像
+离线保存当前集群中的所有镜像，可以规避安装过程中的网络问题
+所需操作可通过[packup_images.sh](scripts/packup_images.sh)完成
+  
+packup_images.sh 会将当前机器上的镜像打包成tar，并自动产生部署脚本`docker_load.sh`,
+将tar文件和`docker_load.sh`拷贝到目标机器的同一目录下，执行`bash docker_load.sh`,
+即可将所有镜像部署到当前机器。
 
 ## 采取用户名密码管理私有 <span id="docker-registry-passwd">Docker Registry</span>
 可以考虑采取用户名密码管理私有Docker Registry，但不推荐
