@@ -1,3 +1,6 @@
+# OpenPAI 集群搭建与维护
+
+
 # 1. 准备集群
 需要对`dev box机器` `master机器` `worker机器`进行软硬件准备
 
@@ -751,7 +754,7 @@ metadata:
     name: nfs-storage  # <pv-label>
 spec:
   capacity:
-    storage: 10Gi
+    storage: 10Gi  # 集群通过挂载点访问硬盘，不受这个容量限制
   volumeMode: Filesystem
   accessModes:
     - ReadWriteMany
