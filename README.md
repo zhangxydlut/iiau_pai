@@ -932,7 +932,10 @@ sudo mount -t nfs4 NFS_SERVER:/NFS_PATH MOUNT_PATH
 
 
 # 建立本地 Docker Repository
-参考教程: [官方教程](https://hub.docker.com/_/registry) | [第三方参考](https://www.cnblogs.com/huanchupkblog/p/10843800.html)
+参考教程:
+[官方教程1](https://docs.docker.com/registry/deploying/#run-an-externally-accessible-registry) |
+[官方教程2](https://hub.docker.com/_/registry) |
+[第三方参考](https://www.cnblogs.com/huanchupkblog/p/10843800.html)
 
 ##集群端
 
