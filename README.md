@@ -192,9 +192,10 @@ ansible-playbook -i ${HOME}/pai-deploy/kubespray/inventory/pai/hosts.yml set-kub
 ```
 在默认情况下，上述命令既不会在`dev box机器`上配置默认的kubeconfig，也不会安装kubectl客户端，
 只会把Kubernetes的config文件放在`~/pai-deploy/kube/config`，
-可以在任何Kubernetes客户端上使用这个config，来连接到Kubernetes集群，例如[将管理权限转移到一个dev box容器中](#dev-box-transfer)
+可以在任何Kubernetes客户端上使用这个config，来连接到Kubernetes集群，例如[将管理权限转移到一个dev box容器中](#dev-box-transfer)。
+将该容器打包为镜像后，可以[部署在其他机器上](#dev-box-transfer2)，从而转移对集群的管理权限
 
-(Optional) 如果希望在本地对集群进行管理(不依赖于`dev box 容器`)，则可以根据安装成功的提示信息，运行
+(Optional 不推荐) 如果希望在本地对集群进行管理(不依赖于`dev box 容器`)，则可以根据安装成功的提示信息，运行
 ```
 # (Optional) install kubectl
 ansible-playbook -i \
@@ -334,6 +335,36 @@ sudo docker exec -it dev-box bash
 sudo docker stop dev-box
 sudo docker rm dev-box
 ```
+
+- <span id="dev-box-transfer2">将`devbox 容器`部署到其他机器上
+首先打包`dev-box 容器`
+```
+sudo docker ps -a | grep 'openpai/dev-box'  # 得到<devbox-container-id>
+sudo docker commit <devbox-container-id> iiaupai/dev-box
+sudo docker save -o dev-box.tar iiaupai/dev-box:latest
+sudo chmod +r dev-box.tar
+```
+在目标机器上下载打包好的`devbox 镜像`
+```
+# 加载镜像
+sudo docker load -i dev-box.tar
+
+# 建立启动容器
+sudo docker run -itd \
+        -e COLUMNS=$COLUMNS -e LINES=$LINES -e TERM=$TERM \
+        -v /var/run/docker.sock:/var/run/docker.sock \
+        --pid=host \
+        --privileged=true \
+        --net=host \
+        --name=dev-box \
+        iiaupai/dev-box:latest
+
+# 开启容器终端
+sudo docker exec -it dev-box bash
+```
+备份的`devbox 镜像`见于[Other Materials](#other-materials)
+
+
 
 # 4. 如何设置虚拟集群
 `Hivedscheduler`是一个用于深度学习的`Kubernetes Scheduler`。
@@ -1087,6 +1118,7 @@ openpai_kubespray_extra_var:
  addon_resizer_image_repo: "mirrorgooglecontainers/addon-resizer"
  dashboard_image_repo: "mirrorgooglecontainers/kubernetes-dashboard-{{ image_arch }}"
 ```
+也可以利用packup_images.sh将之前部署成功的节点的[所有镜像打包](#pack-up-all-images)，离线部署到当前机器上
 
 2.修改安装脚本:
 
@@ -1148,7 +1180,7 @@ cp -r roles/offline-deploy-files-distribute <pai-code-dir>/contrib/kubespray/rol
 ansible-playbook -i ${HOME}/pai-deploy/cluster-cfg/hosts.yml <pai-code-dir>/contrib/kubespray/offline-deploy-files-distribute.yml  --limit=<name-of-new-worker-node>
 ```
 
-- 保存所有镜像
+- 保存所有镜像<span id="pack-up-all-images">
 离线保存当前集群中的所有镜像，可以规避安装过程中的网络问题
 所需操作可通过[packup_images.sh](scripts/packup_images.sh)完成
   
@@ -1244,12 +1276,10 @@ sudo systemctl daemon-reload && sudo systemctl restart kubelet
 ```
 
 
-# Other Materials
-配置过程中的所有**备份**见于：
-```
-链接:http://pan.dlut.edu.cn/share?id=vuyjprthy5cw  提取密码请联系 zhangxy71102@mail.dlut.edu.cn
-```
+# Other Materials <span id='other-materials'>
+配置过程中的所有**备份**见于http://pan.dlut.edu.cn/share?id=vuyjprthy5cw  提取密码请联系 zhangxy71102@mail.dlut.edu.cn
+
 其中包括:
-- 可以对集群进行管理的`dev-box image`
-- 安装集群所需的`pai工程`(clone from https://github.com/microsoft/pai)
-- 安装过程中产生的`pai-deploy文件夹`
+- 可以对集群进行管理的`dev-box image` (目前最新版本为online版本)
+- 安装集群所需的`pai工程`(clone from https://github.com/microsoft/pai) -- pai-bak.tar
+- 安装过程中产生的`pai-deploy文件夹` -- pai-bak.tar 
