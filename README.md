@@ -1230,6 +1230,14 @@ registry:2
 ./paictl.py service start
 ```
 
+如果遇到重启后，service没有正常恢复的情况，可以参考https://github.com/microsoft/pai/issues/5629#issuecomment-954677163
+即尝试下列操作
+```
+sudo swapoff -a
+sudo systemctl restart kubelet.service
+```
+
+
 ## 处理 IP 发生改变的问题
 
 ### A. 如果Master节点IP发生改变
@@ -1277,7 +1285,7 @@ sudo systemctl daemon-reload && sudo systemctl restart kubelet
 
 
 # Other Materials <span id='other-materials'>
-配置过程中的所有**备份**见于http://pan.dlut.edu.cn/share?id=vuyjprthy5cw  提取密码请联系 zhangxy71102@mail.dlut.edu.cn
+配置过程中的所有**备份**见于链接:http://pan.dlut.edu.cn/share?id=v7ixfathwc6a 提取密码请联系 zhangxy71102@mail.dlut.edu.cn
 
 其中包括:
 - 可以对集群进行管理的`dev-box image` (目前最新版本为online版本)
