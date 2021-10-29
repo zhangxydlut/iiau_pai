@@ -1237,6 +1237,14 @@ sudo swapoff -a
 sudo systemctl restart kubelet.service
 ```
 
+如果需要重新挂载硬盘, 
+```
+# sudo rm -r /share  # 务必确保/share下面是空的再删，如果已经挂载，千万不能执行此命令
+sudo mount /dev/sda1 /share 
+./paictl.py service stop -n cluster-configuration storage-manager
+./paictl.py service start -n cluster-configuration storage-manager
+```
+
 
 ## 处理 IP 发生改变的问题
 
