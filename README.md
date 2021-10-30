@@ -1245,6 +1245,25 @@ sudo mount /dev/sda1 /share
 ./paictl.py service start -n cluster-configuration storage-manager
 ```
 
+**重新挂载硬盘前已经在运行的job必须重新启动，否则不能得到新的挂载。所以必须修改`/etc/fstab`**
+![avatar](material/pic/mount.png)
+```
+sudo fdisk -l | grep TiB  # 查看大容量存储设备盘符
+sudo blkid /dev/sda1  # 查看设备的UUID
+vim /etc/fstab  # 永久挂载
+```
+
+- 重启后需要进行的检查
+1. 重启kubelet服务
+  ```
+  swapoff -a
+  sudo systemctl restart kubelet.service
+  ```
+  否则会报下列错误
+  > urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='10.8.xx.xx', port=6443): Max retries exceeded with url: /api/v1/namespaces/default/configmaps/pai-cluster-id?exact=True&export=True (Caused by NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x7f9d9d159910>: Failed to establish a new connection: [Errno 111] Connection refused',))
+
+2. 检查大容量硬盘是否正确挂载到了/share
+
 
 ## 处理 IP 发生改变的问题
 
