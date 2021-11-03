@@ -965,7 +965,7 @@ sudo mount -t nfs4 NFS_SERVER:/NFS_PATH MOUNT_PATH
 其中`${PAI_USER_NAME}`是Job的环境变量，其值就是向PAI提交Job的用户的用户名。
 
 
-# 建立本地 Docker Repository
+# 8. 建立本地 Docker Repository
 参考教程:
 [官方教程1](https://docs.docker.com/registry/deploying/#run-an-externally-accessible-registry) |
 [官方教程2](https://hub.docker.com/_/registry) |
@@ -983,6 +983,8 @@ docker run -d -v /data/DockerRegistry/Data:/var/lib/registry -p 5000:5000 --rest
 # 镜像数据被存储在 /opt/registry 中；docker镜像registry由一个名为 myregistry的容器管理
 ```
 完成上述操作后，就在`本地镜像服务器`上建立了`私有docker registry`服务
+
+
 
 - 修改集群配置
 
@@ -1043,7 +1045,50 @@ curl -XGET http://10.7.xx.xx:5000/v2/<image_name>/tags/list
 ```
 sudo docker pull 10.7.xx.xx:5000/pytorch/pytorch:1.6.0-cuda10.1-cudnn7-devel
 ```
-来访问`私有docker registry`
+来将本地镜像上传至`私有docker registry`
+
+删除registry中镜像的操作可参考 [这篇博客](https://blog.csdn.net/l6807718/article/details/52886546?utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7Edefault-5.control&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7Edefault-5.control)
+- 方案1
+```
+# 假设私有registry的container name 是 ”myregistry“
+sudo docker exec -it myregistry vi /etc/docker/registry/config.yml  # 编辑配置文件
+======================================
+...
+storage:
+  cache:
+    blobdescriptor: inmemory
+  filesystem:
+    rootdirectory: /var/lib/registry
+  delete:
+    enable: true
+...
+======================================
+sudo docker restart myregistry  # 重启registry
+
+curl -X GET http://10.7.xx.xx:5000/v2/_catalog
+# >{"repositories":["evtrack","evtrack/train","evtrack-3090","evtrack-train","pytoch"]} 
+
+curl -X GET http://10.7.xx.xx:5000/v2/evtrack-train/tags/list     
+# >{"name":"evtrack-train","tags":["v1.0"]}
+
+curl  --header "Accept: application/vnd.docker.distribution.manifest.v2+json" -I -X GET http://10.7.xx.xx:5000/v2/evtrack-train/manifests/v1.0 | grep Docker-Content-Digest
+# >Docker-Content-Digest: sha256:93d77440007ab22ddf3f668a8099d158aeca4fd61a6ef8047538da62cb9adceb 
+
+# 执行删除
+curl -X DELETE http://10.7.xx.xx:5000/v2/evtrack-train/manifests/sha256:93d77440007ab22ddf3f668a8099d158aeca4fd61a6ef8047538da62cb9adceb
+
+# 检查是否删除成功
+curl -X GET http://10.7.xx.xx:5000/v2/evtrack-train/tags/list     
+```
+
+- 方案2
+```
+sudo docker exec -it myregistry sh  # 进入容器
+sudo docker exec -it myregistry ls var/lib/registry/docker/registry/v2/repositories/  # 进入容器
+sudo docker exec -it myregistry rm var/lib/registry/docker/registry/v2/repositories/<image-name>  # 进入容器
+sudo docker exec  myregistry bin/registry garbage-collect /etc/docker/registry/config.yml
+```
+
 
 (Optional) [~~可以考虑采取用户名密码管理私有Docker Registry~~](#docker-registry-passwd)，~~但不推荐~~
 
@@ -1074,7 +1119,7 @@ ansible-playbook -i ${HOME}/pai-deploy/cluster-cfg/hosts.yml docker-cache-config
 ```
 
 
-# 8. 如何使用Job任务
+# 9. 如何使用Job任务
 
 ## 操作流程
 1. 配置好包含所需环境的Docker
