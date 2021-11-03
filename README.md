@@ -1087,7 +1087,8 @@ curl -X GET http://10.7.xx.xx:5000/v2/evtrack-train/tags/list
 sudo docker exec -it myregistry sh  # 进入容器
 sudo docker exec -it myregistry ls var/lib/registry/docker/registry/v2/repositories/  # 进入容器
 sudo docker exec -it myregistry rm var/lib/registry/docker/registry/v2/repositories/<image-name>  # 进入容器
-sudo docker exec  myregistry bin/registry garbage-collect /etc/docker/registry/config.yml
+sudo docker exec  myregistry bin/registry garbage-collect /etc/docker/registry/config.yml  # 垃圾回事
+curl -X GET http://10.7.xx.xx:5000/v2/_catalog  # 查看是否删除成功
 ```
 
 
