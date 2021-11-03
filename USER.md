@@ -82,8 +82,8 @@ sudo docker push 10.7.xx.xx:5000/pytorch/pytorch:1.6.0-cuda10.1-cudnn7-devel
 
 可以用下列命令查询，确认镜像已经正确上传
 ```
-curl -XGET http://10.7.xx.xx:5000/v2/_catalog
-curl -XGET http://10.7.xx.xx:5000/v2/image_name/tags/list
+curl -X GET http://10.7.xx.xx:5000/v2/_catalog
+curl -X GET http://10.7.xx.xx:5000/v2/image_name/tags/list
 ```
 
 在Job中通过 `10.7.xx.xx:5000/pytorch/pytorch:1.6.0-cuda10.1-cudnn7-devel`，

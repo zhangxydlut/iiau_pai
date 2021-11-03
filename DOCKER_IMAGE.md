@@ -48,7 +48,6 @@ docker commit -m "message" <container-id> <image-name>:<viersion>
 docker save -o docker save -o ./evtrack-train-v1.0-image.tar evtrack/train:v1.0
 ```
 
-
 ## Use the Docker image
 ```
 sudo docker run \
@@ -57,5 +56,19 @@ sudo docker run \
 --volume="/home/zxy/Desktop/EventVision/EvTrack:/EvTrack" \
 evtrack/train:v1.0 \
 bash
+```
+
+## Upload to Local Registry
+```
+# get the container
+sudo docker ps -a
+
+# make the image
+sudo docker commit -a "zxy" -m "my image" <container-id> <image-name>:<version>
+sudo docker commit -a "author" -m "image information" fj3i2rjf0sd pytorch:1.6.0-cuda10.1-cudnn7-devel
+# rename
+sudo docker tag pytorch:1.6.0-cuda10.1-cudnn7-devel 10.7.xx.xx:5000/pytorch:1.6.0-cuda10.1-cudnn7-devel
+# upload to <host> e.g. 10.7.xx.xx:5000
+sudo docker push 10.7.xx.xx:5000/pytorch:1.6.0-cuda10.1-cudnn7-devel
 ```
 

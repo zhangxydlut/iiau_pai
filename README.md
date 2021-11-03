@@ -1029,6 +1029,7 @@ sudo systemctl restart docker
 ```
 # rename the docker
 sudo docker tag pytorch/pytorch:1.6.0-cuda10.1-cudnn7-devel 10.7.xx.xx:5000/pytorch/pytorch:1.6.0-cuda10.1-cudnn7-devel
+# upload docker image
 sudo docker push 10.7.xx.xx:5000/pytorch/pytorch:1.6.0-cuda10.1-cudnn7-devel
 ```
 
