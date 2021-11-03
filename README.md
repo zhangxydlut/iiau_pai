@@ -1310,6 +1310,14 @@ sudo kubeadm reset
 sudo systemctl daemon-reload && sudo systemctl restart kubelet
 ```
 
+> K8S安装过程中apt出现gpg错误
+
+参考 [这个issue](https://stackoverflow.com/questions/56679191/apt-get-is-broken-after-install-google-cloud-sdk-on-ubuntu-18-04-lts)
+应该是安装docker的过程中,添加密钥和源的时候出现了点问题
+```
+sudo rm /etc/apt/sources.list.d/docker.list
+```
+
 
 # Other Materials <span id='other-materials'>
 配置过程中的所有**备份**见于链接:http://pan.dlut.edu.cn/share?id=v7ixfathwc6a 提取密码请联系 zhangxy71102@mail.dlut.edu.cn
