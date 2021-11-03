@@ -1083,6 +1083,7 @@ curl -X GET http://10.7.xx.xx:5000/v2/evtrack-train/tags/list
 
 - 方案2
 ```
+# 假设私有registry的container name 是 ”myregistry“
 sudo docker exec -it myregistry sh  # 进入容器
 sudo docker exec -it myregistry ls var/lib/registry/docker/registry/v2/repositories/  # 进入容器
 sudo docker exec -it myregistry rm var/lib/registry/docker/registry/v2/repositories/<image-name>  # 进入容器
