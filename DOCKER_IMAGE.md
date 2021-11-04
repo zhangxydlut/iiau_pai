@@ -25,6 +25,14 @@ sudo docker run \
 --volume="/home/zxy/Desktop/EventVision/EvTrack:/EvTrack" \
 pytorch/pytorch:1.6.0-cuda10.1-cudnn7-devel bash
 ```
+if not work, try
+```
+sudo docker run \
+--rm -it --init \
+--net=host \
+pytorch/pytorch:1.6.0-cuda10.1-cudnn7-devel bash
+```
+
 
 ## Install Requirements for Project
 ```
