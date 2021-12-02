@@ -3,8 +3,8 @@
 大部分操作可见于[官方用户手册](https://openpai.readthedocs.io/zh_CN/latest/manual/cluster-user/index.html)
 
 ## 挂载存储
-为了让Job能够访问硬盘上的数据，OpenPAI提供了存储
-
+为了让Job能够访问硬盘上的数据，OpenPAI提供了存储, [官方提供了教程](https://openpai.readthedocs.io/en/latest/manual/cluster-user/how-to-manage-data.html)
+此处进行简单说明
 ![avatar](material/pic/pai_memory.png)
 
 可以通过挂载点(e.g. /mnt/storage-titan1)来访问硬盘上的内容,
